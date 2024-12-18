@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Deploy App", // The name of your task
+            "type": "shell",
+            "command": "./deploy.sh", // Command to run the deploy script
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "runOptions": {
+                "reevaluateOnRerun": false
+            }
+        }
+    ]
+}
