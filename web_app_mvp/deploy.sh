@@ -15,7 +15,9 @@ increment_build_number() {
   new_version="$version_name+$new_build_number"
 
   # Оновлюємо pubspec.yaml
-  sed -i "s/^version: .*/version: $new_version/" pubspec.yaml
+  sed -i.bak "s/^version: .*/version: $new_version/" pubspec.yaml
+  rm pubspec.yaml.bak
+
   echo "Updated version to $new_version"
 }
 
@@ -23,9 +25,10 @@ increment_build_number() {
 increment_build_number
 
 # Додаємо зміни в git
-git add pubspec.yaml
+git add .
 git commit -m "chore: Bump version"
 git tag "v$(grep '^version:' pubspec.yaml | cut -d " " -f 2)"
+git push --tags
 
 # Будуємо веб-додаток
 flutter build web
