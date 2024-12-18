@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:telegram_web_app/telegram_web_app.dart';
 
+late PackageInfo packageInfo;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  packageInfo = await PackageInfo.fromPlatform();
   runApp(const MyApp());
 }
 
@@ -59,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    String version = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -69,9 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
+                  Text('v$version($buildNumber)'),
                   Text(
-                      "Привіт ${TelegramWebApp.instance.initData.user.firstname} ${TelegramWebApp.instance.initData.user.lastname}"),
-                  Text("@ ${TelegramWebApp.instance.initData.user.username}"),
+                      'Привіт ${TelegramWebApp.instance.initData.user.firstname} ${TelegramWebApp.instance.initData.user.lastname}'),
+                  Text('@${TelegramWebApp.instance.initData.user.username}'),
                   const Text(
                     'You have pushed the button this many times:',
                   ),
@@ -85,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  Text("Telegram Web App is loading"),
+                  Text('Telegram Web App is loading'),
                   SizedBox(height: 16),
                   CircularProgressIndicator.adaptive()
                 ],
