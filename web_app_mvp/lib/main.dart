@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:telegram_web_app/telegram_web_app.dart';
 
-void main() {
+void main() async {
+  try {
+    if (TelegramWebApp.instance.isSupported) {
+      TelegramWebApp.instance.ready();
+      Future.delayed(
+          const Duration(seconds: 1), TelegramWebApp.instance.expand);
+    }
+  } catch (e) {
+    print("Error happened in Flutter while loading Telegram $e");
+    // add delay for 'Telegram seldom not loading' bug
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    return main();
+  }
+
+  FlutterError.onError = (details) {
+    print("Flutter error happened: $details");
+  };
+
   runApp(const MyApp());
 }
 
@@ -10,6 +29,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -28,7 +48,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -105,6 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+// Object containing user details and user validation hash
+            Text(
+                "Привіт ${TelegramWebApp.instance.initData.user.firstname} ${TelegramWebApp.instance.initData.user.lastname}"),
+            Text("@ ${TelegramWebApp.instance.initData.user.username}"),
             const Text(
               'You have pushed the button this many times:',
             ),
