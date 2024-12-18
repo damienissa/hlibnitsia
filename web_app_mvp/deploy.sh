@@ -15,7 +15,7 @@ increment_build_number() {
   new_version="$version_name+$new_build_number"
 
   # Оновлюємо pubspec.yaml
-  sed -i.bak "s/^version: .*/version: $new_version/" pubspec.yaml
+  sed -i "s/^version: .*/version: $new_version/" pubspec.yaml
   echo "Updated version to $new_version"
 }
 
