@@ -2,34 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:telegram_web_app/telegram_web_app.dart';
 
 void main() async {
-  try {
-    if (TelegramWebApp.instance.isSupported) {
-      TelegramWebApp.instance.ready();
-      Future.delayed(
-          const Duration(seconds: 1), TelegramWebApp.instance.expand);
-    }
-  } catch (e) {
-    print("Error happened in Flutter while loading Telegram $e");
-    // add delay for 'Telegram seldom not loading' bug
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    return main();
-  }
-
-  FlutterError.onError = (details) {
-    print("Flutter error happened: $details");
-  };
-
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -51,7 +31,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Вітаємо в Hlibnytsia'),
     );
   }
 }
@@ -75,6 +55,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    initializeAndExpand();
+  }
+
+  Future<void> initializeAndExpand() async {
+    if (!isSupported) {
+      return await Future.delayed(Duration(seconds: 1), initializeAndExpand);
+    }
+
+    setState(() {
+      TelegramWebApp.instance.ready();
+      TelegramWebApp.instance.expand();
+    });
+  }
+
+  bool get isSupported => TelegramWebApp.instance.isSupported;
   int _counter = 0;
 
   void _incrementCounter() {
@@ -109,41 +107,53 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+        child: isSupported
+            ? Column(
+                // Column is also a layout widget. It takes a list of children and
+                // arranges them vertically. By default, it sizes itself to fit its
+                // children horizontally, and tries to be as tall as its parent.
+                //
+                // Column has various properties to control how it sizes itself and
+                // how it positions its children. Here we use mainAxisAlignment to
+                // center the children vertically; the main axis here is the vertical
+                // axis because Columns are vertical (the cross axis would be
+                // horizontal).
+                //
+                // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+                // action in the IDE, or press "p" in the console), to see the
+                // wireframe for each widget.
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
 // Object containing user details and user validation hash
-            Text(
-                "Привіт ${TelegramWebApp.instance.initData.user.firstname} ${TelegramWebApp.instance.initData.user.lastname}"),
-            Text("@ ${TelegramWebApp.instance.initData.user.username}"),
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+                  Text(
+                      "Привіт ${TelegramWebApp.instance.initData.user.firstname} ${TelegramWebApp.instance.initData.user.lastname}"),
+                  Text("@ ${TelegramWebApp.instance.initData.user.username}"),
+                  const Text(
+                    'You have pushed the button this many times:',
+                  ),
+                  Text(
+                    '$_counter',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text("Telegram Web App is loading"),
+                  SizedBox(height: 16),
+                  CircularProgressIndicator.adaptive()
+                ],
+              ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: isSupported
+          ? FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            )
+          : null, // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
